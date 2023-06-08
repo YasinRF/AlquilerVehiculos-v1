@@ -9,7 +9,7 @@ import org.iesalandalus.programacion.alquilervehiculos.modelo.negocio.IClientes;
 
 public class Clientes implements IClientes {
 	
-	//Array list
+	//ARRAY LIST
 
 	private List<Cliente> coleccionClientes;
 
@@ -19,7 +19,7 @@ public class Clientes implements IClientes {
 	
 	@Override
 	public List<Cliente> get() {
-		return new ArrayList<Cliente>(coleccionClientes);
+		return new ArrayList<>(coleccionClientes);
 	}
 
 	@Override
@@ -42,13 +42,17 @@ public class Clientes implements IClientes {
 
 	@Override
 	public Cliente buscar(Cliente cliente) {
+		Cliente clienteBuscado;
 		if (cliente == null) {
 			throw new NullPointerException("ERROR: No se puede buscar un cliente nulo.");
 		}
-		if (coleccionClientes.contains(cliente)) {
-			return cliente;
+		int indice = coleccionClientes.indexOf(cliente);
+		if (indice != -1) {
+			clienteBuscado = coleccionClientes.get(indice);
+		} else {
+			clienteBuscado = null;
 		}
-		return null;
+		return clienteBuscado;
 	}
 
 	@Override
@@ -69,18 +73,19 @@ public class Clientes implements IClientes {
 		if (cliente == null) {
 			throw new NullPointerException("ERROR: No se puede modificar un cliente nulo.");
 		}
-		if (!coleccionClientes.contains(cliente)) {
+		Cliente clienteModif = buscar(cliente);
+		if (clienteModif == null) {
 			throw new OperationNotSupportedException("ERROR: No existe ningún cliente con ese DNI.");
 		} else {
 			if (nombre != null && !nombre.trim().isEmpty()) {
-				cliente.setNombre(nombre);
+				clienteModif.setNombre(nombre);
 			}
 
 			if (telefono != null && !telefono.trim().isEmpty()) {
-				cliente.setTelefono(telefono);
+				clienteModif.setTelefono(telefono);
 			}
-		}
 
+	}
 	}
 
 }

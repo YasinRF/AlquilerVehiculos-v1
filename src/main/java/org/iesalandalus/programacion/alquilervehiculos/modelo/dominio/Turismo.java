@@ -16,9 +16,6 @@ public class Turismo extends Vehiculo {
 
 	public Turismo(Turismo turismo) {
 		super(turismo);
-		if (turismo == null) {
-			throw new NullPointerException("ERROR: No es posible copiar un turismo nulo.");
-		}
 		cilindrada = turismo.getCilindrada();
 	}
 
@@ -37,8 +34,7 @@ public class Turismo extends Vehiculo {
 	
 	@Override
 	public int getFactorPrecio() {
-		int precioTurismo = cilindrada/FACTOR_CILINDRADA;
-		return precioTurismo;
+		return cilindrada/FACTOR_CILINDRADA;
 	}
 
 	// CREAMOS EL TOSTRING

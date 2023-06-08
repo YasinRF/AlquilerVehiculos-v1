@@ -12,10 +12,10 @@ public interface IVehiculos {
 
 	int getCantidad();
 
-	void insertar(Vehiculo Vehiculo) throws OperationNotSupportedException;
+	void insertar(Vehiculo vehiculo) throws OperationNotSupportedException;
 
-	Vehiculo buscar(Vehiculo Vehiculo);
+	Vehiculo buscar(Vehiculo vehiculo);
 
-	void borrar(Vehiculo Vehiculo) throws OperationNotSupportedException;
+	void borrar(Vehiculo vehiculo) throws OperationNotSupportedException;
 
 }

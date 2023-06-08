@@ -12,10 +12,9 @@ import org.iesalandalus.programacion.alquilervehiculos.modelo.dominio.Cliente;
 import org.iesalandalus.programacion.alquilervehiculos.modelo.dominio.Vehiculo;
 import org.iesalandalus.programacion.alquilervehiculos.modelo.negocio.IAlquileres;
 
-
 public class Alquileres implements IAlquileres {
 
-	// ArrayList
+	// ARRAY LIST
 
 	private List<Alquiler> coleccionAlquileres;
 
@@ -25,7 +24,7 @@ public class Alquileres implements IAlquileres {
 
 	@Override
 	public List<Alquiler> get() {
-		return new ArrayList<Alquiler>(coleccionAlquileres);
+		return new ArrayList<>(coleccionAlquileres);
 	}
 
 	@Override
@@ -66,73 +65,80 @@ public class Alquileres implements IAlquileres {
 
 	private void comprobarAlquiler(Cliente cliente, Vehiculo vehiculo, LocalDate fechaAlquiler)
 			throws OperationNotSupportedException {
-
-		for (Alquiler alquiler : get(cliente)) {
-			if (alquiler.getFechaDevolucion() == null) {
-				throw new OperationNotSupportedException("ERROR: El cliente tiene otro alquiler sin devolver.");
+		for (Alquiler alquiler : get()) {
+			if (alquiler.getCliente().equals(cliente)) {
+				if (alquiler.getFechaDevolucion() == null) {
+					throw new OperationNotSupportedException("ERROR: El cliente tiene otro alquiler sin devolver.");
+				}
+				if (alquiler.getFechaDevolucion().isAfter(fechaAlquiler)
+						|| alquiler.getFechaDevolucion().isEqual(fechaAlquiler)) {
+					throw new OperationNotSupportedException("ERROR: El cliente tiene un alquiler posterior.");
+				}
 			}
-			if (alquiler.getFechaDevolucion().isAfter(fechaAlquiler) || alquiler.getFechaDevolucion().isEqual(fechaAlquiler)) {
-				throw new OperationNotSupportedException("ERROR: El cliente tiene un alquiler posterior.");
+
+			if (alquiler.getVehiculo().equals(vehiculo)) {
+				if (alquiler.getFechaDevolucion() == null) {
+					throw new OperationNotSupportedException("ERROR: El turismo está actualmente alquilado.");
+				}
+				if (alquiler.getFechaDevolucion().isAfter(fechaAlquiler)
+						|| alquiler.getFechaDevolucion().isEqual(fechaAlquiler)) {
+					throw new OperationNotSupportedException("ERROR: El turismo tiene un alquiler posterior.");
+				}
 			}
 		}
-
-		for (Alquiler alquiler : get(vehiculo)) {
-			if (alquiler.getFechaDevolucion() == null) {
-				throw new OperationNotSupportedException("ERROR: El turismo está actualmente alquilado.");
-			}
-			if (alquiler.getFechaDevolucion().isAfter(fechaAlquiler) || alquiler.getFechaDevolucion().isEqual(fechaAlquiler)) {
-				throw new OperationNotSupportedException("ERROR: El turismo tiene un alquiler posterior.");
-			}
-		}
+		
 
 	}
-	
+
 	private Alquiler getAlquilerAbierto(Cliente cliente) {
 		Iterator<Alquiler> iteradorCliente = get(cliente).iterator();
 		Alquiler alquilerAbierto1 = null;
 		while (iteradorCliente.hasNext()) {
-			Alquiler alquiler=iteradorCliente.next();
-			if(alquiler.getCliente().equals(cliente) && alquiler.getFechaDevolucion()==null) {
+			Alquiler alquiler = iteradorCliente.next();
+			if (alquiler.getCliente().equals(cliente) && alquiler.getFechaDevolucion() == null) {
 				alquilerAbierto1 = alquiler;
 			}
 		}
 		return alquilerAbierto1;
 	}
+
 	@Override
 	public void devolver(Cliente cliente, LocalDate fechaDevolucion) throws OperationNotSupportedException {
+		Alquiler clienteAbierto = getAlquilerAbierto(cliente);
 		if (cliente == null) {
 			throw new NullPointerException("ERROR: No se puede devolver un alquiler de un cliente nulo.");
 		}
-		if (getAlquilerAbierto(cliente) == null) {
+		if (clienteAbierto == null) {
 			throw new OperationNotSupportedException("ERROR: No existe ningún alquiler abierto para ese cliente.");
 		}
-		getAlquilerAbierto(cliente).devolver(fechaDevolucion);
+		coleccionAlquileres.get(coleccionAlquileres.indexOf(clienteAbierto)).devolver(fechaDevolucion);
 	}
-	
+
 	private Alquiler getAlquilerAbierto(Vehiculo vehiculo) {
 		Iterator<Alquiler> iteradorVehiculo = get(vehiculo).iterator();
 		Alquiler alquilerAbierto2 = null;
 		while (iteradorVehiculo.hasNext()) {
-			Alquiler alquiler=iteradorVehiculo.next();
-			if(alquiler.getVehiculo().equals(vehiculo) && alquiler.getFechaDevolucion()==null) {
+			Alquiler alquiler = iteradorVehiculo.next();
+			if (alquiler.getVehiculo().equals(vehiculo) && alquiler.getFechaDevolucion() == null) {
 				alquilerAbierto2 = alquiler;
 			}
 		}
 		return alquilerAbierto2;
 	}
-	
+
 	@Override
 	public void devolver(Vehiculo vehiculo, LocalDate fechaDevolucion) throws OperationNotSupportedException {
-		if (vehiculo== null) {
+		if (vehiculo == null) {
 			throw new NullPointerException("ERROR: No se puede devolver un alquiler de un vehículo nulo.");
 		}
-		if (getAlquilerAbierto(vehiculo) == null) {
+		Alquiler vehiculoAbierto = getAlquilerAbierto(vehiculo);
+		if (vehiculoAbierto == null) {
 			throw new OperationNotSupportedException("ERROR: No existe ningún alquiler abierto para ese vehículo.");
 		}
-		getAlquilerAbierto(vehiculo).devolver(fechaDevolucion);
+		vehiculoAbierto.devolver(fechaDevolucion);
 
 	}
-	
+
 	@Override
 	public void borrar(Alquiler alquiler) throws OperationNotSupportedException {
 
@@ -144,18 +150,20 @@ public class Alquileres implements IAlquileres {
 		}
 		coleccionAlquileres.remove(alquiler);
 	}
-	
+
 	@Override
 	public Alquiler buscar(Alquiler alquiler) {
+		Alquiler alquilerBuscado;
 		if (alquiler == null) {
 			throw new NullPointerException("ERROR: No se puede buscar un alquiler nulo.");
 		}
+		int indice = coleccionAlquileres.indexOf(alquiler);
 		if (coleccionAlquileres.contains(alquiler)) {
-			return alquiler;
+			alquilerBuscado = coleccionAlquileres.get(indice);
+		} else {
+			alquilerBuscado = null;
 		}
-		return null;
+		return alquilerBuscado;
 	}
-
-	
 
 }

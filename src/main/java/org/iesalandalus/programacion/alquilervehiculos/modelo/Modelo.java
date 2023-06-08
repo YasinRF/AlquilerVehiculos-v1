@@ -48,7 +48,7 @@ public abstract class Modelo {
 		System.out.println("El modelo ha terminado");
 	}
 	
-	//Hacemos los métodos abstract
+	//HACEMOS LOS MÉTODOS ABSTRACT
 	
 	public abstract void insertar(Cliente cliente) throws OperationNotSupportedException;
 
